@@ -161,7 +161,7 @@ export default function PersonalSite() {
           <div className="hero__identity reveal reveal--1">
             <p className="eyebrow">AI · DATA SCIENCE · AGENT SYSTEMS</p>
             <div className="nameplate">
-              <span className="nameplate__cn">徐子杨</span>
+              <span className="nameplate__cn">许子阳</span>
               <span className="nameplate__en">Ziyang Xu</span>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function PersonalSite() {
       </main>
 
       <footer className="footer">
-        <p>徐子杨 · Ziyang Xu</p>
+        <p>许子阳 · Ziyang Xu</p>
         <p>在一个想改变现状的下午开始，持续更新中。</p>
         <a href="#top">回到顶部 ↑</a>
       </footer>
