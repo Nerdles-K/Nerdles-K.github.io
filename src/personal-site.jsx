@@ -175,8 +175,7 @@ export default function PersonalSite() {
 
           <div className="hero__intro reveal reveal--3">
             <p>
-              我是香港中文大学（深圳）数据科学与大数据技术专业的大四学生，刚结束在巴黎
-              ESIEE 的交换学习。
+              我是香港中文大学（深圳）数据科学与大数据技术专业的大四学生，刚结束一段在巴黎的交换学习。
             </p>
             <p>
               目前关注 LLM 数据质量、模型评测和 Agent
@@ -193,10 +192,6 @@ export default function PersonalSite() {
             <div>
               <span>EDUCATION</span>
               <strong>CUHK-Shenzhen</strong>
-            </div>
-            <div>
-              <span>EXCHANGE</span>
-              <strong>ESIEE Paris</strong>
             </div>
           </div>
         </section>
