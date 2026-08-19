@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import DataField from "./DataField";
 
 const projects = [
   {
@@ -158,6 +159,8 @@ export default function PersonalSite() {
 
       <main id="top">
         <section className="hero" id="about" aria-labelledby="hero-title">
+          <DataField />
+
           <div className="hero__identity reveal reveal--1">
             <p className="eyebrow">AI · DATA SCIENCE · AGENT SYSTEMS</p>
             <div className="nameplate">
