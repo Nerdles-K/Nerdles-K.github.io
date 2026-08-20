@@ -68,6 +68,16 @@ body {
   font-size: 15px;
   font-weight: 700;
   place-items: center;
+  transition:
+    background-color 240ms ease,
+    color 240ms ease,
+    transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.wordmark:hover > span {
+  background: var(--ink);
+  color: var(--paper);
+  transform: rotate(-12deg) scale(1.06);
 }
 
 .wordmark small,
@@ -298,10 +308,28 @@ body {
 }
 
 .section-index {
+  position: relative;
   margin: 8px 0 0;
   color: var(--accent);
   font-size: 10px;
   font-weight: 700;
+}
+
+.section-index::after {
+  display: block;
+  width: 42px;
+  height: 1px;
+  margin-top: 12px;
+  background: currentcolor;
+  content: "";
+  transform: scaleX(0.22);
+  transform-origin: left;
+  transition: transform 620ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.is-visible .section-index::after,
+.section-index.is-visible::after {
+  transform: scaleX(1);
 }
 
 .section-heading h2,
@@ -329,8 +357,19 @@ body {
   gap: 18px;
 }
 
+.project-card-reveal {
+  perspective: 1200px;
+}
+
 .project-card {
   --project-color: var(--accent);
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --lift-x: 0px;
+  --lift-y: 0px;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  position: relative;
   display: grid;
   grid-template-columns: 118px 1fr;
   min-height: 360px;
@@ -339,8 +378,27 @@ body {
   background: rgba(251, 248, 240, 0.74);
   transition:
     background-color 220ms ease,
-    transform 220ms ease,
+    transform 180ms ease-out,
     box-shadow 220ms ease;
+  transform: perspective(1200px) translate3d(var(--lift-x), var(--lift-y), 0)
+    rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.project-card::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--glow-x) var(--glow-y),
+    rgba(255, 255, 255, 0.62),
+    transparent 24%
+  );
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
 }
 
 .project-card--blue {
@@ -352,9 +410,14 @@ body {
 }
 
 .project-card:hover {
+  --lift-x: -4px;
+  --lift-y: -4px;
   background: var(--paper-light);
   box-shadow: 8px 8px 0 var(--project-color);
-  transform: translate(-4px, -4px);
+}
+
+.project-card:hover::after {
+  opacity: 0.46;
 }
 
 .project-card__rail {
@@ -377,6 +440,11 @@ body {
   font-family: var(--display);
   font-size: 64px;
   line-height: 1;
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.project-card:hover .project-card__mark {
+  transform: rotate(-8deg) scale(1.1);
 }
 
 .project-card__body {
@@ -451,6 +519,28 @@ body {
   color: var(--ink-soft);
   font-family: var(--mono);
   font-size: 10px;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 220ms ease;
+}
+
+.project-card:hover .tag-list li {
+  border-color: var(--project-color);
+  color: var(--project-color);
+  transform: translateY(-2px);
+}
+
+.project-card:hover .tag-list li:nth-child(2) {
+  transition-delay: 35ms;
+}
+
+.project-card:hover .tag-list li:nth-child(3) {
+  transition-delay: 70ms;
+}
+
+.project-card:hover .tag-list li:nth-child(4) {
+  transition-delay: 105ms;
 }
 
 .work-note {
@@ -493,12 +583,30 @@ body {
   gap: 18px;
   padding: 24px 0;
   border-bottom: 1px solid var(--line-strong);
+  transition: background-color 240ms ease;
 }
 
 .interest-list > li > span {
   color: var(--accent);
   font-family: var(--mono);
   font-size: 11px;
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.interest-list li > div {
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.interest-list li:hover {
+  background: rgba(251, 248, 240, 0.52);
+}
+
+.interest-list li:hover > span {
+  transform: translateX(7px) rotate(-8deg);
+}
+
+.interest-list li:hover > div {
+  transform: translateX(7px);
 }
 
 .interest-list h3 {
@@ -549,11 +657,23 @@ body {
 }
 
 .contact-list a {
-  transition: color 180ms ease;
+  transition:
+    color 180ms ease,
+    padding 220ms ease;
 }
 
 .contact-list a:hover {
+  padding-right: 8px;
+  padding-left: 8px;
   color: var(--accent);
+}
+
+.contact-list a > span:last-child {
+  transition: transform 220ms ease;
+}
+
+.contact-list a:hover > span:last-child {
+  transform: translate(3px, -3px);
 }
 
 .contact-list__placeholder {
@@ -599,6 +719,23 @@ body {
 
 .reveal--4 {
   animation-delay: 240ms;
+}
+
+.motion-ready [data-scroll-reveal] {
+  opacity: 0;
+  filter: blur(5px);
+  transform: translateY(34px) scale(0.985);
+  transition:
+    opacity 720ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 720ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 720ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.motion-ready [data-scroll-reveal].is-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0) scale(1);
 }
 
 @keyframes reveal {
@@ -766,8 +903,9 @@ body {
   }
 
   .project-card:hover {
+    --lift-x: -2px;
+    --lift-y: -2px;
     box-shadow: 5px 5px 0 var(--project-color);
-    transform: translate(-2px, -2px);
   }
 
   .project-card__rail {
@@ -823,5 +961,17 @@ body {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .project-card,
+  .project-card:hover {
+    --lift-x: 0px;
+    --lift-y: 0px;
+    --tilt-x: 0deg !important;
+    --tilt-y: 0deg !important;
+  }
+
+  .project-card::after {
+    display: none;
   }
 }

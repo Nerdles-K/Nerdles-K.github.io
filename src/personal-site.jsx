@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import "./App.css";
 import DataField from "./DataField";
 
@@ -75,6 +75,62 @@ const contactItems = [
   { label: "GitHub", value: "待补充 GitHub 地址", href: "" },
 ];
 
+function useScrollReveal() {
+  useLayoutEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      return undefined;
+    }
+
+    const root = document.documentElement;
+    const elements = document.querySelectorAll("[data-scroll-reveal]");
+    root.classList.add("motion-ready");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -8%", threshold: 0.12 },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+
+    return () => {
+      observer.disconnect();
+      root.classList.remove("motion-ready");
+    };
+  }, []);
+}
+
+function handleCardPointerMove(event) {
+  if (event.pointerType !== "mouse") return;
+
+  const card = event.currentTarget;
+  const bounds = card.getBoundingClientRect();
+  const x = (event.clientX - bounds.left) / bounds.width;
+  const y = (event.clientY - bounds.top) / bounds.height;
+
+  card.style.setProperty("--tilt-x", `${((0.5 - y) * 3.2).toFixed(2)}deg`);
+  card.style.setProperty("--tilt-y", `${((x - 0.5) * 4.2).toFixed(2)}deg`);
+  card.style.setProperty("--glow-x", `${(x * 100).toFixed(1)}%`);
+  card.style.setProperty("--glow-y", `${(y * 100).toFixed(1)}%`);
+}
+
+function resetCardPointer(event) {
+  const card = event.currentTarget;
+  card.style.setProperty("--tilt-x", "0deg");
+  card.style.setProperty("--tilt-y", "0deg");
+  card.style.setProperty("--glow-x", "50%");
+  card.style.setProperty("--glow-y", "50%");
+}
+
 function StatusLine() {
   const [statusIndex, setStatusIndex] = useState(0);
 
@@ -105,7 +161,11 @@ function StatusLine() {
 
 function ProjectCard({ project }) {
   return (
-    <article className={`project-card project-card--${project.tone}`}>
+    <article
+      className={`project-card project-card--${project.tone}`}
+      onPointerMove={handleCardPointerMove}
+      onPointerLeave={resetCardPointer}
+    >
       <div className="project-card__rail" aria-hidden="true">
         <span className="project-card__number">{project.number}</span>
         <span className="project-card__mark">{project.mark}</span>
@@ -142,6 +202,8 @@ function ProjectCard({ project }) {
 }
 
 export default function PersonalSite() {
+  useScrollReveal();
+
   return (
     <div className="site-shell">
       <header className="topbar">
@@ -200,7 +262,7 @@ export default function PersonalSite() {
         </section>
 
         <section className="work-section" id="work" aria-labelledby="work-title">
-          <div className="section-heading">
+          <div className="section-heading" data-scroll-reveal>
             <p className="section-index">01 / SELECTED WORK</p>
             <div>
               <h2 id="work-title">做过的一些事</h2>
@@ -209,18 +271,28 @@ export default function PersonalSite() {
           </div>
 
           <div className="project-list">
-            {projects.map((project) => (
-              <ProjectCard key={project.title} project={project} />
+            {projects.map((project, index) => (
+              <div
+                className="project-card-reveal"
+                data-scroll-reveal
+                key={project.title}
+                style={{ "--reveal-delay": `${index * 90}ms` }}
+              >
+                <ProjectCard project={project} />
+              </div>
             ))}
           </div>
 
-          <p className="work-note">
+          <p className="work-note" data-scroll-reveal>
             这些项目未必都有漂亮的结果，但每一个都留下了可以复用的方法、踩过的坑，以及下一次会做得更好的理由。
           </p>
         </section>
 
         <section className="questions-section" aria-labelledby="questions-title">
-          <div className="section-heading section-heading--compact">
+          <div
+            className="section-heading section-heading--compact"
+            data-scroll-reveal
+          >
             <p className="section-index">02 / OPEN QUESTIONS</p>
             <div>
               <h2 id="questions-title">还在追的问题</h2>
@@ -229,8 +301,12 @@ export default function PersonalSite() {
           </div>
 
           <ol className="interest-list">
-            {interests.map((interest) => (
-              <li key={interest.number}>
+            {interests.map((interest, index) => (
+              <li
+                data-scroll-reveal
+                key={interest.number}
+                style={{ "--reveal-delay": `${index * 80}ms` }}
+              >
                 <span>{interest.number}</span>
                 <div>
                   <h3>{interest.title}</h3>
@@ -242,14 +318,20 @@ export default function PersonalSite() {
         </section>
 
         <section className="contact-section" id="contact" aria-labelledby="contact-title">
-          <p className="section-index">03 / SAY HELLO</p>
+          <p className="section-index" data-scroll-reveal>
+            03 / SAY HELLO
+          </p>
           <div className="contact-section__content">
-            <div>
+            <div data-scroll-reveal>
               <h2 id="contact-title">如果你也在琢磨类似的问题，欢迎来聊。</h2>
               <p>研究想法、side project、实习机会，或者只是一部值得看的电影，都可以。</p>
             </div>
 
-            <ul className="contact-list">
+            <ul
+              className="contact-list"
+              data-scroll-reveal
+              style={{ "--reveal-delay": "100ms" }}
+            >
               {contactItems.map((item) => (
                 <li key={item.label}>
                   {item.href ? (
@@ -272,7 +354,7 @@ export default function PersonalSite() {
         </section>
       </main>
 
-      <footer className="footer">
+      <footer className="footer" data-scroll-reveal>
         <p>许子阳 · Ziyang Xu</p>
         <p>在一个想改变现状的下午开始，持续更新中。</p>
         <a href="#top">回到顶部 ↑</a>
